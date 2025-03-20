@@ -3,7 +3,7 @@
       <h2>Registro</h2>
       <form @submit.prevent="handleRegister">
         <div>
-          <label for="username">Usuário:</label>
+          <label for="username">utilizador:</label>
           <input type="text" id="username" v-model="username" required />
         </div>
         <div>

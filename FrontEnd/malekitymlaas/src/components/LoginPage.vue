@@ -4,12 +4,12 @@
         <h2>Login</h2>
         <form @submit.prevent="handleLogin">
           <div class="form-group">
-            <label for="username">Usuário</label>
+            <label for="username">utilizador</label>
             <input
               type="text"
               id="username"
               v-model="username"
-              placeholder="Digite seu usuário"
+              placeholder="Digite seu utilizador"
               required
             />
           </div>

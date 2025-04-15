@@ -5,6 +5,7 @@
       <button @click="handleLogout">Sair</button>
       <!-- Botão para redirecionar para a página de treino -->
       <button @click="goToTrain">Treinar Novo Modelo</button>
+      <router-link to="/modelos">Ver Modelos Treinados</router-link>
     </div>
   </template>
     

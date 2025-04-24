@@ -1,0 +1,29 @@
+# Node.js
+node_modules/
+
+# Python virtual environments
+env/
+Backend/MaleKitty_API/env/
+
+# Environment variables
+.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Logs e temporários
+*.log
+*.tmp
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Modelos e ficheiros de dados
+*.pt
+*.pkl
+*.csv
+
+# Pastas de testes ou outputs temporários
+MLtest/

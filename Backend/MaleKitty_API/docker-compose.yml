@@ -7,7 +7,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=mysql+pymysql://root:root@localhost/mlaas_db
+      - DATABASE_URL=mysql+pymysql://root:topedro2003@localhost/mlaas_db
     depends_on:
       - db
 

@@ -1,0 +1,30 @@
+# Node.js
+node_modules/
+
+env/
+# Environment variables
+.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+env/
+/env/
+Backend/MaleKitty_API/env
+*.pt
+*.pkl
+*.csv
+__pycache__/
+*.log
+*.tmp
+.DS_Store
+# Ignorar pastas de testes ou outputs temporários
+MLtest/

@@ -2,39 +2,74 @@
   <div class="train-model">
     <h1>Treinar Modelo</h1>
     <form @submit.prevent="submitForm">
-      <!-- Nome do Modelo -->
+      <!-- Nome do modelo -->
       <div class="form-group">
         <label for="modelName">Nome do Modelo:</label>
-        <input type="text" id="modelName" v-model="form.model_name" required />
+        <input id="modelName" v-model="form.model_name" required />
       </div>
 
-      <!-- Descrição (opcional) -->
+      <!-- Descrição opcional -->
       <div class="form-group">
-        <label for="description">Descrição:</label>
-        <input type="text" id="description" v-model="form.description" placeholder="Descrição opcional" />
+        <label for="description">Descrição (opcional):</label>
+        <input id="description" v-model="form.description" />
       </div>
 
-      <!-- Tipo de Algoritmo -->
+      <!-- Algoritmo fixo em FNN -->
       <div class="form-group">
         <label for="algorithm">Algoritmo:</label>
-        <select id="algorithm" v-model="form.algorithm" required>
-          <option value="FNN">FNN</option>
-          <option value="CNN">CNN</option>
-          <option value="DNN">DNN</option>
+        <select id="algorithm" v-model="form.algorithm">
+          <option>FNN</option>
         </select>
       </div>
 
-      <!-- Seleção do arquivo CSV -->
+      <!-- Upload e leitura de cabeçalhos -->
       <div class="form-group">
-        <label for="file">Selecione o CSV:</label>
-        <input type="file" id="file" @change="handleFileUpload" accept=".csv" required />
+        <label for="file">CSV de Treino:</label>
+        <input
+          id="file"
+          type="file"
+          @change="handleFileUpload"
+          accept=".csv"
+          required
+        />
+      </div>
+
+      <!-- Se já houver colunas lidas, mostra select para escolher label -->
+      <div v-if="headers.length" class="form-group">
+        <label for="labelCol">Coluna Alvo:</label>
+        <select id="labelCol" v-model="form.label_col" required>
+          <option value="" disabled>-- escolha a coluna --</option>
+          <option v-for="col in headers" :key="col" :value="col">
+            {{ col }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Número de épocas -->
+      <div class="form-group">
+        <label for="epochs">Épocas:</label>
+        <input
+          id="epochs"
+          type="number"
+          v-model.number="form.max_epochs"
+          min="1"
+          required
+        />
       </div>
 
       <button type="submit">Enviar para Treinar</button>
     </form>
 
-    <div v-if="responseMessage" class="response">
-      <p>{{ responseMessage }}</p>
+    <!-- Feedback de resposta -->
+    <div v-if="response" class="response">
+      <p>{{ response.message }}</p>
+      <ul>
+        <li>Acurácia: {{ (response.accuracy * 100).toFixed(2) }}%</li>
+        <li>Precisão: {{ (response.precision * 100).toFixed(2) }}%</li>
+        <li>Recall: {{ (response.recall * 100).toFixed(2) }}%</li>
+        <li>F1 Score: {{ (response.f1 * 100).toFixed(2) }}%</li>
+        <li>Épocas Executadas: {{ response.epochs }}</li>
+      </ul>
     </div>
   </div>
 </template>
@@ -49,49 +84,51 @@ export default {
       form: {
         model_name: '',
         description: '',
-        algorithm: 'FNN'
+        algorithm: 'FNN',
+        label_col: '',
+        max_epochs: 10
       },
       file: null,
-      responseMessage: '',
-      username: ''
-    }
-  },
-  mounted() {
-    const storedUsername = localStorage.getItem('username')
-    if (!storedUsername) {
-      this.$router.push('/')
-    } else {
-      this.username = storedUsername
+      headers: [],       // armazena nomes das colunas do CSV
+      response: null,
+      user_id: localStorage.getItem('user_id')
     }
   },
   methods: {
-    handleFileUpload(event) {
-      this.file = event.target.files[0]
+    handleFileUpload(e) {
+      const f = e.target.files[0]
+      this.file = f
+      this.headers = []
+      this.form.label_col = ''
+      // Lê só a primeira linha do CSV para extrair cabeçalhos
+      const reader = new FileReader()
+      reader.onload = () => {
+        const text = reader.result.split(/\r?\n/)[0]  // primeira linha
+        this.headers = text.split(',').map(h => h.trim())
+      }
+      reader.readAsText(f)
     },
     async submitForm() {
-      if (!this.file) {
-        this.responseMessage = 'Por favor, selecione um arquivo CSV.'
-        return
-      }
-
-      const formData = new FormData()
-      formData.append('model_name', this.form.model_name)
-      formData.append('description', this.form.description)
-      formData.append('algorithm', this.form.algorithm)
-      formData.append('user_id', 1) // Trocar por ID real no futuro
-      formData.append('file', this.file)
+      if (!this.file || !this.form.label_col) return
+      const fd = new FormData()
+      fd.append('user_id', this.user_id)
+      fd.append('model_name', this.form.model_name)
+      fd.append('description', this.form.description)
+      fd.append('algorithm', this.form.algorithm)
+      fd.append('label_col', this.form.label_col)
+      fd.append('max_epochs', this.form.max_epochs)
+      fd.append('file', this.file)
 
       try {
-        const response = await axios.post('http://127.0.0.1:8000/treinar', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        })
-
-        this.responseMessage = `Sucesso: ${response.data.message}. Modelo ID: ${response.data.modelo_id}`
-        localStorage.setItem('modelAccuracy', response.data.accuracy ?? '')
-        this.$router.push('/model-stats')
-      } catch (error) {
-        console.error(error)
-        this.responseMessage = 'Erro ao treinar o modelo. Verifique o console para mais detalhes.'
+        const r = await axios.post(
+          'http://localhost:8000/treinar',
+          fd,
+          { headers: { 'Content-Type': 'multipart/form-data' } }
+        )
+        this.response = r.data
+      } catch (err) {
+        console.error(err.response?.data || err)
+        this.response = { message: 'Erro ao treinar. Veja o console.' }
       }
     }
   }
@@ -102,9 +139,10 @@ export default {
 .train-model {
   max-width: 500px;
   margin: 2rem auto;
-  padding: 1rem;
-  border: 1px solid #ccc;
+  padding: 1.5rem;
+  border: 1px solid #ddd;
   border-radius: 8px;
+  background: #fafafa;
 }
 .form-group {
   margin-bottom: 1rem;
@@ -112,19 +150,23 @@ export default {
 label {
   display: block;
   margin-bottom: 0.3rem;
+  font-weight: 500;
 }
 input[type="text"],
-input[type="file"],
-select {
+input[type="number"],
+select,
+input[type="file"] {
   width: 100%;
-  padding: 0.4rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
   box-sizing: border-box;
 }
 button {
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   background-color: #4caf50;
-  border: none;
   color: #fff;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
 }
@@ -132,8 +174,12 @@ button:hover {
   background-color: #45a049;
 }
 .response {
-  margin-top: 1rem;
-  font-weight: bold;
-  color: #333;
+  margin-top: 1.5rem;
+  background: #eef;
+  padding: 1rem;
+  border-radius: 4px;
+}
+.response ul {
+  margin: 0.5rem 0 0 1rem;
 }
 </style>

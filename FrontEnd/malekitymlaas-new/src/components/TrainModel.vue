@@ -14,11 +14,12 @@
         <input id="description" v-model="form.description" />
       </div>
 
-      <!-- Algoritmo fixo em FNN -->
+      <!-- Algoritmo -->
       <div class="form-group">
         <label for="algorithm">Algoritmo:</label>
         <select id="algorithm" v-model="form.algorithm">
           <option>FNN</option>
+          <option>DNN</option>
         </select>
       </div>
 

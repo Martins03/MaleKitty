@@ -9,6 +9,7 @@
           <th>Nome</th>
           <th>Acurácia</th>
           <th>Baixar</th>
+          <th>Inferir</th>
         </tr>
       </thead>
       <tbody>
@@ -18,6 +19,10 @@
           <td>{{ formatPct(m.accuracy) }}</td>
           <td>
             <a :href="m.download_url" target="_blank">📥</a>
+          </td>
+          <td>
+            <!-- Programmatic navigation to your infer page -->
+            <button @click="goToInfer(m.id)">🔮</button>
           </td>
         </tr>
       </tbody>
@@ -45,12 +50,10 @@ export default {
   async mounted() {
     const uid = localStorage.getItem('user_id')
     if (!uid) return this.$router.replace('/')
-
     try {
-      const { data } = await axios.get(
-        'http://localhost:8000/modelos',
-        { params: { user_id: uid }}
-      )
+      const { data } = await axios.get('http://localhost:8000/modelos', {
+        params: { user_id: uid }
+      })
       this.models = data
     } catch (err) {
       console.error(err)
@@ -66,6 +69,10 @@ export default {
       return val != null
         ? (val * 100).toFixed(2) + '%'
         : '—'
+    },
+    goToInfer(modeloId) {
+      // route must be defined, e.g. { path: '/infer/:id', name: 'ModelInfer' }
+      this.$router.push({ name: 'ModelInfer', params: { id: modeloId } })
     }
   }
 }
@@ -76,10 +83,10 @@ export default {
   max-width: 900px;
   margin: 2rem auto;
   padding: 1rem;
-  text-align: center;
   background: #fff;
   border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  text-align: center;
 }
 .models-table {
   width: 100%;
@@ -90,7 +97,6 @@ export default {
 .models-table td {
   border: 1px solid #ddd;
   padding: 0.6rem;
-  text-align: left;
 }
 .models-table th {
   background: #f5f5f5;

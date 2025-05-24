@@ -62,7 +62,8 @@
     </form>
 
     <!-- Feedback de resposta -->
-    <div v-if="response" class="response">
+   <!-- Feedback de resposta -->
+   <div v-if="response" class="response">
       <p>{{ response.message }}</p>
       <ul>
         <li>Acurácia: {{ (response.accuracy * 100).toFixed(2) }}%</li>
@@ -71,8 +72,17 @@
         <li>F1 Score: {{ (response.f1 * 100).toFixed(2) }}%</li>
         <li>Épocas Executadas: {{ response.epochs }}</li>
       </ul>
+
+      <!-- Gráfico de Loss & Accuracy -->
+      <div v-if="response.chart_url" class="chart">
+        <h2>Histórico de Treino</h2>
+        <img :src="response.chart_url" alt="Histórico de treino" />
+      </div>
     </div>
   </div>
+
+
+  
 </template>
 
 <script>
@@ -134,6 +144,7 @@ export default {
     }
   }
 }
+
 </script>
 
 <style scoped>

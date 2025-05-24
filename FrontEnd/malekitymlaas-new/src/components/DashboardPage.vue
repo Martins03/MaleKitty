@@ -1,6 +1,10 @@
 <template>
-  <div class="dashboard">
-    <h1>Seus Modelos</h1>
+  <div>
+    <AppNavbar />
+  </div>
+
+  <div class="dashboard-page">
+    <h1>Seus Modelos Treinados</h1>
 
     <table v-if="models.length" class="models-table">
       <thead>
@@ -8,8 +12,7 @@
           <th>ID</th>
           <th>Nome</th>
           <th>Acurácia</th>
-          <th>Baixar</th>
-          <th>Inferir</th>
+          <th>Download</th>
         </tr>
       </thead>
       <tbody>
@@ -18,24 +21,19 @@
           <td>{{ m.model_name }}</td>
           <td>{{ formatPct(m.accuracy) }}</td>
           <td>
-            <a :href="m.download_url" target="_blank">📥</a>
-          </td>
-          <td>
-            <!-- Programmatic navigation to your infer page -->
-            <button @click="goToInfer(m.id)">🔮</button>
+            <a :href="m.download_url" target="_blank" class="download-icon">📥</a>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <p v-else>Você ainda não treinou nenhum modelo.</p>
-
-    <div class="actions">
-      <button @click="$router.push('/train')">Treinar Novo</button>
-      <button @click="logout">Sair</button>
-    </div>
+    <p v-else class="no-models">Você ainda não treinou nenhum modelo.</p>
   </div>
 </template>
+
+<script setup>
+import AppNavbar from './AppNavbar.vue'
+</script>
 
 <script>
 import axios from 'axios'
@@ -49,7 +47,8 @@ export default {
   },
   async mounted() {
     const uid = localStorage.getItem('user_id')
-    if (!uid) return this.$router.replace('/')
+    if (!uid) return this.$router.replace('/login')
+
     try {
       const { data } = await axios.get('http://localhost:8000/modelos', {
         params: { user_id: uid }
@@ -61,59 +60,69 @@ export default {
     }
   },
   methods: {
-    logout() {
-      localStorage.clear()
-      this.$router.replace('/')
-    },
     formatPct(val) {
-      return val != null
-        ? (val * 100).toFixed(2) + '%'
-        : '—'
-    },
-    goToInfer(modeloId) {
-      // route must be defined, e.g. { path: '/infer/:id', name: 'ModelInfer' }
-      this.$router.push({ name: 'ModelInfer', params: { id: modeloId } })
+      return val != null ? (val * 100).toFixed(2) + '%' : '—'
     }
   }
 }
 </script>
 
 <style scoped>
-.dashboard {
-  max-width: 900px;
+.dashboard-page {
+  max-width: 1000px;
   margin: 2rem auto;
-  padding: 1rem;
-  background: #fff;
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 2rem;
+  background-color: #0b172a;
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
   text-align: center;
+  font-family: 'Segoe UI', sans-serif;
 }
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #1e90ff;
+}
+
 .models-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 1.5rem;
+  background-color: #1c2b40;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
+
 .models-table th,
 .models-table td {
-  border: 1px solid #ddd;
-  padding: 0.6rem;
+  padding: 1rem;
+  border: 1px solid #2e3e57;
 }
+
 .models-table th {
-  background: #f5f5f5;
+  background-color: #23344d;
+  color: #00ccff;
 }
-.actions {
+
+.models-table td {
+  color: #eee;
+}
+
+.download-icon {
+  font-size: 1.4rem;
+  color: #1e90ff;
+  text-decoration: none;
+}
+
+.download-icon:hover {
+  color: #00bfff;
+}
+
+.no-models {
   margin-top: 1rem;
-}
-.actions button {
-  margin: 0 0.5rem;
-  padding: 0.6rem 1.2rem;
-  background: #4caf50;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.actions button:hover {
-  background: #45a049;
+  font-size: 1.1rem;
+  color: #ccc;
 }
 </style>

@@ -1,4 +1,8 @@
 <template>
+  <div>
+    <AppNavbar />
+    <RouterView />
+  </div>
   <div class="model-stats">
     <h1>Estatísticas do Modelo</h1>
 
@@ -12,8 +16,6 @@
     <div v-else>
       <p>Carregando gráfico...</p>
     </div>
-
-    <button @click="goBack">Voltar ao Dashboard</button>
   </div>
 </template>
 
@@ -57,10 +59,6 @@ onMounted(() => {
   }
 })
 
-// Volta para trás
-function goBack() {
-  window.history.back()
-}
 </script>
 
 <style scoped>

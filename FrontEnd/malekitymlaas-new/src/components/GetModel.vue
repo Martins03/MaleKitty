@@ -1,4 +1,9 @@
 <template>
+  <div>
+    <AppNavbar />
+    <RouterView />
+  </div>
+
   <div class="model-list">
     <h2>Modelos do Utilizador</h2>
     <ul v-if="modelos.length > 0">
@@ -13,6 +18,11 @@
     <p v-else>Sem modelos encontrados.</p>
   </div>
 </template>
+
+<script setup>
+import AppNavbar from './AppNavbar.vue';
+
+</script>
 
 <script>
 import axios from 'axios';

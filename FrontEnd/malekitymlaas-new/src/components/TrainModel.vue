@@ -1,4 +1,9 @@
 <template>
+  <div>
+    <AppNavbar />
+    <RouterView />
+  </div>
+
   <div class="train-model">
     <h1>Treinar Modelo</h1>
     <form @submit.prevent="submitForm">
@@ -75,6 +80,10 @@
   </div>
 </template>
 
+<script setup>
+  import AppNavbar from './AppNavbar.vue'
+</script>
+
 <script>
 import axios from 'axios'
 
@@ -138,49 +147,117 @@ export default {
 
 <style scoped>
 .train-model {
-  max-width: 500px;
+  max-width: 600px;
   margin: 2rem auto;
-  padding: 1.5rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #fafafa;
+  padding: 2rem;
+  background-color: #111d32;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
 }
+
+h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
 .form-group {
   margin-bottom: 1rem;
 }
+
 label {
   display: block;
   margin-bottom: 0.3rem;
   font-weight: 500;
+  color: #ccc;
 }
+
 input[type="text"],
 input[type="number"],
 select,
 input[type="file"] {
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 0.6rem;
+  background-color: #1c2b40;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 5px;
   box-sizing: border-box;
 }
-button {
-  padding: 0.6rem 1.2rem;
-  background-color: #4caf50;
-  color: #fff;
+
+input::file-selector-button {
+  background: #2575fc;
   border: none;
-  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  color: white;
   cursor: pointer;
-}
-button:hover {
-  background-color: #45a049;
-}
-.response {
-  margin-top: 1.5rem;
-  background: #eef;
-  padding: 1rem;
   border-radius: 4px;
 }
+
+button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #04AA6D;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+button:hover {
+  background-color: #03975f;
+}
+
+.response {
+  margin-top: 2rem;
+  background: #1c2b40;
+  padding: 1.5rem;
+  border-radius: 8px;
+  color: #eee;
+}
+
 .response ul {
-  margin: 0.5rem 0 0 1rem;
+  margin-top: 0.5rem;
+  padding-left: 1.2rem;
+}
+
+.loading-container {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.loader-image {
+  width: 120px;
+  margin-bottom: 1rem;
+}
+
+.loading-container p {
+  color: #ddd;
+  margin-bottom: 1rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background-color: #333;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  background-color: #04AA6D;
+  animation: loadingAnim 1.5s infinite ease-in-out;
+  transform: translateX(-100%);
+}
+
+@keyframes loadingAnim {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(0); }
+  100% { transform: translateX(100%); }
 }
 </style>
+

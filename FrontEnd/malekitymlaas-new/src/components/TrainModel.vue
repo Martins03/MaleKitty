@@ -28,7 +28,7 @@
         </select>
       </div>
 
-      <!-- Upload e leitura de cabeçalhos -->
+      <!-- Upload CSV -->
       <div class="form-group">
         <label for="file">CSV de Treino:</label>
         <input
@@ -40,18 +40,16 @@
         />
       </div>
 
-      <!-- Se já houver colunas lidas, mostra select para escolher label -->
+      <!-- Coluna Alvo -->
       <div v-if="headers.length" class="form-group">
         <label for="labelCol">Coluna Alvo:</label>
         <select id="labelCol" v-model="form.label_col" required>
           <option value="" disabled>-- escolha a coluna --</option>
-          <option v-for="col in headers" :key="col" :value="col">
-            {{ col }}
-          </option>
+          <option v-for="col in headers" :key="col" :value="col">{{ col }}</option>
         </select>
       </div>
 
-      <!-- Número de épocas -->
+      <!-- Épocas -->
       <div class="form-group">
         <label for="epochs">Épocas:</label>
         <input
@@ -66,8 +64,17 @@
       <button type="submit">Enviar para Treinar</button>
     </form>
 
-    <!-- Feedback de resposta -->
-    <div v-if="response" class="response">
+    <!-- LOADING -->
+    <div v-if="loading" class="loading-container">
+      <img src="@/assets/cat_loader.png" alt="A treinar..." class="loader-image" />
+      <p>A treinar modelo... Aguarde</p>
+      <div class="progress-bar">
+        <div class="bar"></div>
+      </div>
+    </div>
+
+    <!-- RESPOSTA -->
+    <div v-else-if="response" class="response">
       <p>{{ response.message }}</p>
       <ul>
         <li>Acurácia: {{ (response.accuracy * 100).toFixed(2) }}%</li>
@@ -81,7 +88,7 @@
 </template>
 
 <script setup>
-  import AppNavbar from './AppNavbar.vue'
+import AppNavbar from './AppNavbar.vue'
 </script>
 
 <script>
@@ -99,8 +106,9 @@ export default {
         max_epochs: 10
       },
       file: null,
-      headers: [],       // armazena nomes das colunas do CSV
+      headers: [],
       response: null,
+      loading: false,
       user_id: localStorage.getItem('user_id')
     }
   },
@@ -110,10 +118,9 @@ export default {
       this.file = f
       this.headers = []
       this.form.label_col = ''
-      // Lê só a primeira linha do CSV para extrair cabeçalhos
       const reader = new FileReader()
       reader.onload = () => {
-        const text = reader.result.split(/\r?\n/)[0]  // primeira linha
+        const text = reader.result.split(/\r?\n/)[0]
         this.headers = text.split(',').map(h => h.trim())
       }
       reader.readAsText(f)
@@ -128,17 +135,18 @@ export default {
       fd.append('label_col', this.form.label_col)
       fd.append('max_epochs', this.form.max_epochs)
       fd.append('file', this.file)
-
+      this.loading = true
+      this.response = null
       try {
-        const r = await axios.post(
-          'http://localhost:8000/treinar',
-          fd,
-          { headers: { 'Content-Type': 'multipart/form-data' } }
-        )
+        const r = await axios.post('http://localhost:8000/treinar', fd, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
         this.response = r.data
       } catch (err) {
         console.error(err.response?.data || err)
         this.response = { message: 'Erro ao treinar. Veja o console.' }
+      } finally {
+        this.loading = false
       }
     }
   }
@@ -227,15 +235,22 @@ button:hover {
 .loading-container {
   text-align: center;
   margin-top: 2rem;
+  background: #1c2b40;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  color: #ddd;
 }
 
 .loader-image {
-  width: 120px;
+  width: 100px;
   margin-bottom: 1rem;
+  animation: pulse 1.5s infinite ease-in-out;
 }
 
 .loading-container p {
-  color: #ddd;
+  color: #ccc;
+  font-size: 1.1rem;
   margin-bottom: 1rem;
 }
 
@@ -259,5 +274,9 @@ button:hover {
   50% { transform: translateX(0); }
   100% { transform: translateX(100%); }
 }
-</style>
 
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+</style>

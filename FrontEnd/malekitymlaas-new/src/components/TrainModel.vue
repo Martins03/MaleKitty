@@ -120,8 +120,10 @@ export default {
       this.form.label_col = ''
       const reader = new FileReader()
       reader.onload = () => {
-        const text = reader.result.split(/\r?\n/)[0]
-        this.headers = text.split(',').map(h => h.trim())
+      const text = reader.result.split(/\r?\n/)[0]
+      this.headers = text.includes(';') ? text.split(';') : text.split(',')
+      this.headers = this.headers.map(h => h.trim())
+
       }
       reader.readAsText(f)
     },

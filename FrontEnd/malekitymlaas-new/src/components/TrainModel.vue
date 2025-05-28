@@ -1,19 +1,26 @@
 <template>
-  <div>
+   <div>
     <AppNavbar />
-    <RouterView />
   </div>
-
   <div class="train-model">
     <h1>Treinar Modelo</h1>
     <form @submit.prevent="submitForm">
+      <!-- Tarefa -->
+      <div class="form-group">
+        <label for="task">Tarefa:</label>
+        <select id="task" v-model="form.task">
+          <option value="classification">Classificação</option>
+          <option value="regression">Regressão</option>
+        </select>
+      </div>
+
       <!-- Nome do modelo -->
       <div class="form-group">
         <label for="modelName">Nome do Modelo:</label>
         <input id="modelName" v-model="form.model_name" required />
       </div>
 
-      <!-- Descrição opcional -->
+      <!-- Descrição -->
       <div class="form-group">
         <label for="description">Descrição (opcional):</label>
         <input id="description" v-model="form.description" />
@@ -64,7 +71,10 @@
       <button type="submit">Enviar para Treinar</button>
     </form>
 
-    <!-- LOADING -->
+
+
+
+    <!-- Loading -->
     <div v-if="loading" class="loading-container">
       <img src="@/assets/cat_loader.png" alt="A treinar..." class="loader-image" />
       <p>A treinar modelo... Aguarde</p>
@@ -73,32 +83,65 @@
       </div>
     </div>
 
-    <!-- RESPOSTA -->
+    <!-- Resposta -->
     <div v-else-if="response" class="response">
-      <p>{{ response.message }}</p>
-      <ul>
-        <li>Acurácia: {{ (response.accuracy * 100).toFixed(2) }}%</li>
-        <li>Precisão: {{ (response.precision * 100).toFixed(2) }}%</li>
-        <li>Recall: {{ (response.recall * 100).toFixed(2) }}%</li>
-        <li>F1 Score: {{ (response.f1 * 100).toFixed(2) }}%</li>
-        <li>Épocas Executadas: {{ response.epochs }}</li>
-      </ul>
+      <!-- Erro -->
+      <div v-if="response.error" class="error">
+        <p>{{ response.message }}</p>
+      </div>
+
+      <!-- Sucesso -->
+      <div v-else>
+        <p>{{ response.message }}</p>
+        <ul>
+          <template v-if="form.task === 'classification'">
+            <li v-if="response.accuracy != null">
+              Acurácia: {{ (response.accuracy * 100).toFixed(2) }}%
+            </li>
+            <li v-if="response.precision != null">
+              Precisão: {{ (response.precision * 100).toFixed(2) }}%
+            </li>
+            <li v-if="response.recall != null">
+              Recall: {{ (response.recall * 100).toFixed(2) }}%
+            </li>
+            <li v-if="response.f1 != null">
+              F1 Score: {{ (response.f1 * 100).toFixed(2) }}%
+            </li>
+          </template>
+          <template v-else>
+            <li v-if="response.mse != null">
+              MSE: {{ response.mse.toFixed(4) }}
+            </li>
+            <li v-if="response.mae != null">
+              MAE: {{ response.mae.toFixed(4) }}
+            </li>
+            <li v-if="response.r2_score != null">
+              R² Score: {{ response.r2_score.toFixed(4) }}
+            </li>
+          </template>
+          <li v-if="response.epochs != null">
+            Épocas Executadas: {{ response.epochs }}
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import AppNavbar from './AppNavbar.vue'
-</script>
-
 <script>
-import axios from 'axios'
 
+
+
+
+
+
+import axios from 'axios'
 export default {
   name: 'TrainModel',
   data() {
     return {
       form: {
+        task: 'classification',
         model_name: '',
         description: '',
         algorithm: 'FNN',
@@ -120,8 +163,17 @@ export default {
       this.form.label_col = ''
       const reader = new FileReader()
       reader.onload = () => {
-        const text = reader.result.split(/\r?\n/)[0]
-        this.headers = text.split(',').map(h => h.trim())
+        // lê só a primeira linha
+        const firstLine = reader.result.split(/\r?\n/)[0]
+        // testa delimitadores comuns
+        const delims = [',', ';', '\t', '|']
+        let best = ',', max = 0
+        delims.forEach(d => {
+          const cnt = firstLine.split(d).length
+          if (cnt > max) { max = cnt; best = d }
+        })
+        // separa pelo delimitador escolhido
+        this.headers = firstLine.split(best).map(h => h.trim())
       }
       reader.readAsText(f)
     },
@@ -138,19 +190,32 @@ export default {
       this.loading = true
       this.response = null
       try {
-        const r = await axios.post('http://localhost:8000/treinar', fd, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        })
+        const endpoint = this.form.task === 'classification'
+          ? '/treinar/classificacao'
+          : '/treinar/regressao'
+        const r = await axios.post(
+          `http://localhost:8000${endpoint}`,
+          fd,
+          { headers: { 'Content-Type': 'multipart/form-data' } }
+        )
         this.response = r.data
       } catch (err) {
         console.error(err.response?.data || err)
-        this.response = { message: 'Erro ao treinar. Veja o console.' }
+        const detail = err.response?.data?.detail
+        this.response = {
+          error: true,
+          message: detail || 'Erro ao treinar. Veja o console.'
+        }
       } finally {
         this.loading = false
       }
     }
   }
 }
+</script>
+
+<script setup>
+import AppNavbar from './AppNavbar.vue'
 </script>
 
 <style scoped>

@@ -12,7 +12,7 @@
           <th>ID</th>
           <th>Nome</th>
           <th>Acurácia</th>
-          <th>Download</th>
+          <th>Inferência</th>
         </tr>
       </thead>
       <tbody>
@@ -21,7 +21,21 @@
           <td>{{ m.model_name }}</td>
           <td>{{ formatPct(m.accuracy) }}</td>
           <td>
-            <a :href="m.download_url" target="_blank" class="download-icon">📥</a>
+            <div class="infer-action">
+              <input
+                type="file"
+                class="infer-input"
+                @change="e => handleFileSelect(m.id, e)"
+                accept=".csv"
+              />
+              <button
+                v-if="selectedFiles[m.id]"
+                class="infer-button"
+                @click="inferModel(m.id)"
+              >
+                Inferir
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -42,7 +56,8 @@ export default {
   name: 'DashboardPage',
   data() {
     return {
-      models: []
+      models: [],
+      selectedFiles: {}
     }
   },
   async mounted() {
@@ -62,6 +77,41 @@ export default {
   methods: {
     formatPct(val) {
       return val != null ? (val * 100).toFixed(2) + '%' : '—'
+    },
+    handleFileSelect(modelId, event) {
+      const file = event.target.files[0]
+      if (file) {
+        this.selectedFiles[modelId] = file
+      }
+    },
+    async inferModel(modelId) {
+      const file = this.selectedFiles[modelId]
+      if (!file) {
+        alert("Seleciona um ficheiro antes de inferir.")
+        return
+      }
+
+      const fd = new FormData()
+      fd.append('file', file)
+      fd.append('model_id', modelId)
+
+      try {
+        const res = await axios.post('http://localhost:8000/inferir_modelo', fd, {
+          responseType: 'blob'
+        })
+
+        const blob = new Blob([res.data], { type: 'text/csv' })
+        const url = URL.createObjectURL(blob)
+
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `resultado_modelo_${modelId}.csv`
+        a.click()
+        URL.revokeObjectURL(url)
+      } catch (err) {
+        console.error(err.response?.data || err)
+        alert('Erro na inferência.')
+      }
     }
   }
 }
@@ -110,14 +160,32 @@ h1 {
   color: #eee;
 }
 
-.download-icon {
-  font-size: 1.4rem;
-  color: #1e90ff;
-  text-decoration: none;
+.infer-action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.download-icon:hover {
-  color: #00bfff;
+.infer-input {
+  color: #ccc;
+  background-color: #1c2b40;
+  border: 1px solid #444;
+  border-radius: 5px;
+  padding: 0.4rem;
+  max-width: 220px;
+  flex-shrink: 0;
+}
+
+.infer-button {
+  background-color: #1e90ff;
+  color: white;
+  padding: 0.45rem 0.9rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.infer-button:hover {
+  background-color: #007acc;
 }
 
 .no-models {

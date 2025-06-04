@@ -1,7 +1,9 @@
 <template>
-   <div>
+  <div>
     <AppNavbar />
+    <RouterView />
   </div>
+
   <div class="train-model">
     <h1>Treinar Modelo</h1>
     <form @submit.prevent="submitForm">
@@ -20,7 +22,7 @@
         <input id="modelName" v-model="form.model_name" required />
       </div>
 
-      <!-- Descrição -->
+      <!-- Descrição opcional -->
       <div class="form-group">
         <label for="description">Descrição (opcional):</label>
         <input id="description" v-model="form.description" />
@@ -71,10 +73,7 @@
       <button type="submit">Enviar para Treinar</button>
     </form>
 
-
-
-
-    <!-- Loading -->
+    <!-- LOADING -->
     <div v-if="loading" class="loading-container">
       <img src="@/assets/cat_loader.png" alt="A treinar..." class="loader-image" />
       <p>A treinar modelo... Aguarde</p>
@@ -127,6 +126,10 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import AppNavbar from './AppNavbar.vue'
+</script>
 
 <script>
 
@@ -212,10 +215,6 @@ export default {
     }
   }
 }
-</script>
-
-<script setup>
-import AppNavbar from './AppNavbar.vue'
 </script>
 
 <style scoped>

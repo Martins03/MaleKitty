@@ -14,7 +14,7 @@ const routes = [
   { path: '/registerpage', name: 'RegisterPage', component: RegisterPage },
   { path: '/train', name: 'TrainModel', component: TrainModel },
   { path: '/model-stats', name: 'ModelStats', component: ModelStats },
-  { path: '/male-kitty-page', name: 'MaleKittyPage', component: MaleKittyPage }
+  { path: '/male-kitty-page', name: 'MaleKittyPage', component: MaleKittyPage },
 ]
 
 const router = createRouter({

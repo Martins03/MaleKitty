@@ -4,7 +4,6 @@
       <RouterLink to="/male-kitty-page" :class="{ active: route.path === '/male-kitty-page' }">MaleKitty</RouterLink>
       <RouterLink to="/dashboardpage" :class="{ active: route.path === '/dashboardpage' }">Modelos</RouterLink>
       <RouterLink to="/train" :class="{ active: route.path === '/train' }">Treinar</RouterLink>
-      <RouterLink to="/infer" :class="{ active: route.path === '/infer' }">Inferir</RouterLink>
       <RouterLink to="/model-stats" :class="{ active: route.path === '/model-stats' }">Estatísticas</RouterLink>
     </div>
 

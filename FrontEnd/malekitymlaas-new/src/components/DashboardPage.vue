@@ -4,7 +4,7 @@
   </div>
 
   <div class="dashboard-page">
-    <h1>Seus Modelos Treinados</h1>
+    <h1>Os Seus Modelos Treinados</h1>
 
     <table v-if="models.length" class="models-table">
       <thead>
@@ -13,6 +13,7 @@
           <th>Nome</th>
           <th>Acurácia</th>
           <th>Inferência</th>
+          <th>Eliminar</th>
         </tr>
       </thead>
       <tbody>
@@ -37,11 +38,18 @@
               </button>
             </div>
           </td>
+          <td>
+            <button class="delete-button" @click="deleteModel(m.id)">
+              Eliminar
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
 
-    <p v-else class="no-models">Você ainda não treinou nenhum modelo.</p>
+    <p v-else class="no-models">
+      Ainda não treinou nenhum modelo.
+    </p>
   </div>
 </template>
 
@@ -62,7 +70,10 @@ export default {
   },
   async mounted() {
     const uid = localStorage.getItem('user_id')
-    if (!uid) return this.$router.replace('/login')
+    if (!uid) {
+      this.$router.replace('/login')
+      return
+    }
 
     try {
       const { data } = await axios.get('http://localhost:8000/modelos', {
@@ -71,7 +82,7 @@ export default {
       this.models = data
     } catch (err) {
       console.error(err)
-      alert('Não foi possível carregar seus modelos.')
+      alert('Não foi possível carregar os seus modelos.')
     }
   },
   methods: {
@@ -87,7 +98,7 @@ export default {
     async inferModel(modelId) {
       const file = this.selectedFiles[modelId]
       if (!file) {
-        alert("Seleciona um ficheiro antes de inferir.")
+        alert("Selecione um ficheiro antes de inferir.")
         return
       }
 
@@ -111,6 +122,30 @@ export default {
       } catch (err) {
         console.error(err.response?.data || err)
         alert('Erro na inferência.')
+      }
+    },
+    async deleteModel(modelId) {
+      const uid = localStorage.getItem('user_id')
+      if (!uid) {
+        alert('Não autenticado.')
+        return
+      }
+
+      if (!confirm(`Tem a certeza que quer eliminar o modelo #${modelId}?`)) {
+        return
+      }
+
+      try {
+        // Supondo que o endpoint DELETE existe em /modelos/{modelo_id}
+        await axios.delete(`http://localhost:8000/modelos/${modelId}`, {
+          params: { user_id: uid }
+        })
+
+        // Remove da lista local
+        this.models = this.models.filter(m => m.id !== modelId)
+      } catch (err) {
+        console.error(err)
+        alert('Erro ao eliminar o modelo.')
       }
     }
   }
@@ -186,6 +221,18 @@ h1 {
 }
 .infer-button:hover {
   background-color: #007acc;
+}
+
+.delete-button {
+  background-color: #ff4c4c;
+  color: white;
+  padding: 0.45rem 0.9rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.delete-button:hover {
+  background-color: #e53939;
 }
 
 .no-models {

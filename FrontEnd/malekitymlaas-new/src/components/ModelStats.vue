@@ -1,25 +1,28 @@
 <template>
-  <div class="model-stats">
-    <h1>Estatísticas do Modelo</h1>
+  <div>
+    <AppNavbar />
+    
+    <div class="model-stats">
+      <h1>Estatísticas do Modelo</h1>
 
-    <!-- Só renderiza quando tiver exatamente 4 valores em data -->
-    <div v-if="datasets[0].data.length === labels.length">
-      <BarChart
-        :chart-data="{ labels, datasets }"
-        :chart-options="chartOptions"
-      />
+      <!-- Só renderiza quando tiver exatamente 4 valores em data -->
+      <div v-if="datasets[0].data.length === labels.length">
+        <BarChart
+          :chart-data="{ labels, datasets }"
+          :chart-options="chartOptions"
+        />
+      </div>
+      <div v-else>
+        <p>Carregando gráfico...</p>
+      </div>
     </div>
-    <div v-else>
-      <p>Carregando gráfico...</p>
-    </div>
-
-    <button @click="goBack">Voltar ao Dashboard</button>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import BarChart from '@/components/BarChart.vue'
+import AppNavbar from './AppNavbar.vue'
 
 // 4 rótulos fixos
 const labels = ['Acurácia', 'Precisão', 'Recall', 'F1 Score']
@@ -56,11 +59,6 @@ onMounted(() => {
     ]
   }
 })
-
-// Volta para trás
-function goBack() {
-  window.history.back()
-}
 </script>
 
 <style scoped>

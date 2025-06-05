@@ -1,20 +1,20 @@
 <template>
   <div>
     <AppNavbar />
-    <RouterView />
-  </div>
-  <div class="model-stats">
-    <h1>Estatísticas do Modelo</h1>
+    
+    <div class="model-stats">
+      <h1>Estatísticas do Modelo</h1>
 
-    <!-- Só renderiza quando tiver exatamente 4 valores em data -->
-    <div v-if="datasets[0].data.length === labels.length">
-      <BarChart
-        :chart-data="{ labels, datasets }"
-        :chart-options="chartOptions"
-      />
-    </div>
-    <div v-else>
-      <p>Carregando gráfico...</p>
+      <!-- Só renderiza quando tiver exatamente 4 valores em data -->
+      <div v-if="datasets[0].data.length === labels.length">
+        <BarChart
+          :chart-data="{ labels, datasets }"
+          :chart-options="chartOptions"
+        />
+      </div>
+      <div v-else>
+        <p>Carregando gráfico...</p>
+      </div>
     </div>
   </div>
 </template>
@@ -22,6 +22,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import BarChart from '@/components/BarChart.vue'
+import AppNavbar from './AppNavbar.vue'
 
 // 4 rótulos fixos
 const labels = ['Acurácia', 'Precisão', 'Recall', 'F1 Score']
@@ -58,7 +59,6 @@ onMounted(() => {
     ]
   }
 })
-
 </script>
 
 <style scoped>

@@ -11,7 +11,7 @@
         <tr>
           <th>ID</th>
           <th>Nome</th>
-          <th>Acurácia</th>
+          <th>Eficacia</th>
           <th>Inferência</th>
           <th>Eliminar</th>
         </tr>

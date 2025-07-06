@@ -4,12 +4,12 @@
         <h2>Crie sua Conta</h2>
         <form @submit.prevent="handleRegister">
           <div class="form-group">
-            <label for="username">Usuário</label>
+            <label for="username">Utilizador</label>
             <input
               type="text"
               id="username"
               v-model="username"
-              placeholder="Digite seu usuário"
+              placeholder="Digite seu Utilizador"
               required
             />
           </div>
@@ -24,12 +24,12 @@
             />
           </div>
           <div class="form-group">
-            <label for="password">Senha</label>
+            <label for="password">Password</label>
             <input
               type="password"
               id="password"
               v-model="password"
-              placeholder="Digite sua senha"
+              placeholder="Digite sua Password"
               required
             />
           </div>

@@ -3,7 +3,7 @@
       <h2>Registro</h2>
       <form @submit.prevent="handleRegister">
         <div>
-          <label for="username">Usuário:</label>
+          <label for="username">Utilizador:</label>
           <input type="text" id="username" v-model="username" required />
         </div>
         <div>
@@ -11,7 +11,7 @@
           <input type="email" id="email" v-model="email" required />
         </div>
         <div>
-          <label for="password">Senha:</label>
+          <label for="password">Password:</label>
           <input type="password" id="password" v-model="password" required />
         </div>
         <button type="submit">Registrar</button>

@@ -7,6 +7,7 @@ import ModelStats from '../components/ModelStats.vue'
 import HomePage from '../components/HomePage.vue'
 import MaleKittyPage from '../components/MaleKittyPage.vue'
 
+
 const routes = [
   { path: '/', name: 'HomePage', component: HomePage },
   { path: '/login', name: 'Login', component: LoginPage },
@@ -15,6 +16,7 @@ const routes = [
   { path: '/train', name: 'TrainModel', component: TrainModel },
   { path: '/model-stats', name: 'ModelStats', component: ModelStats },
   { path: '/male-kitty-page', name: 'MaleKittyPage', component: MaleKittyPage },
+  
 ]
 
 const router = createRouter({

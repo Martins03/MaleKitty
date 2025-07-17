@@ -1,0 +1,10 @@
+{
+  "message": "Treino conclu\u00eddo",
+  "modelo_id": 309,
+  "accuracy": 0.91,
+  "precision": 0.9101640656262506,
+  "recall": 0.91,
+  "f1": 0.90999099909991,
+  "epochs": 100,
+  "roundtrip_time_s": 5.056929111480713
+}

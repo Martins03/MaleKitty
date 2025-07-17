@@ -278,7 +278,7 @@ export default {
         if (f.name.endsWith('.xlsx') || f.name.endsWith('.xls')) {
           // Para arquivos Excel, precisamos usar uma biblioteca como SheetJS
           // Mas como não podemos adicionar novas dependências, informamos ao Utilizador
-          alert('Formato Excel detectado. Por favor, salve como CSV para melhor compatibilidade.');
+          alert('Formato Excel detectado. Por favor, guarde como CSV para melhor compatibilidade.');
           return;
         }
         

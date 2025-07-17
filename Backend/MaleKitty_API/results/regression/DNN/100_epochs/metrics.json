@@ -1,0 +1,9 @@
+{
+  "message": "Treino conclu\u00eddo",
+  "modelo_id": 321,
+  "mse": 0.047331103070605895,
+  "mae": 0.16764818275696597,
+  "r2_score": 0.9574179129029334,
+  "epochs": 100,
+  "roundtrip_time_s": 73.15775752067566
+}

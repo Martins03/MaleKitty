@@ -1,0 +1,20 @@
+{
+  "id": 309,
+  "algorithm": "FNN",
+  "model_name": "FNN_100",
+  "description": "",
+  "accuracy": 0.91,
+  "precision": 0.910164,
+  "recall": 0.91,
+  "f1": 0.909991,
+  "mse": null,
+  "mae": null,
+  "r2_score": null,
+  "n_features": 10,
+  "n_classes": 2,
+  "history_plots": {
+    "pr_curve": "http://testserver/static/clf_pr_20250711_181314.png",
+    "acc_curve": "http://testserver/static/clf_acc_20250711_181314.png",
+    "loss_curve": "http://testserver/static/clf_loss_20250711_181314.png"
+  }
+}

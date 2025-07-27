@@ -29,13 +29,13 @@
     <!-- Cartões com navegação -->
     <div class="card link-card" @click="$router.push('/dashboardpage')">
       <h3>➡ Ver Modelos</h3>
-      <p>Acesse os modelos que treinou e descarregue os ficheiros .pt.</p>
+      <p>Acesse os modelos que treinou e descarregue os ficheiros inferidos.</p>
     </div>
     <div class="card link-card" @click="$router.push('/train')">
       <h3>➡ Treinar Modelo</h3>
       <p>Carregue os seus dados e treine FNN ou DNN com poucos cliques.</p>
     </div>
-    <div class="card link-card" @click="$router.push('/model-stats')">
+    <div class="card link-card" @click="$router.push('/dashboardpage')">
       <h3>➡ Inferencia</h3>
       <p>Teste os seus modelos treinados com dados reais e obtenha previsões automáticas.</p>
     </div>
